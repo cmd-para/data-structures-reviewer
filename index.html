@@ -1,0 +1,1716 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DSA Lecture Reviewer — Interactive Study Hub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbar & subtle animations */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.5);
+    }
+
+    /* Flashcard 3D flip */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* Smooth transitions */
+    .fade-in {
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans antialiased transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Mobile Header -->
+  <header class="lg:hidden sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+      </div>
+      <span class="font-bold text-base tracking-tight">DSA Study Hub</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" aria-label="Toggle Theme">
+        <svg id="theme-icon-mobile" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+      </button>
+      <button onclick="toggleMobileMenu()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200" aria-label="Open Navigation">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Slide-over Drawer -->
+  <div id="mobile-drawer" class="fixed inset-0 z-40 hidden lg:hidden">
+    <div class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs" onclick="toggleMobileMenu()"></div>
+    <aside class="relative w-72 max-w-[80vw] h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-5 flex flex-col justify-between overflow-y-auto">
+      <div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">DS</div>
+            <span class="font-bold text-lg">DSA Reviewer</span>
+          </div>
+          <button onclick="toggleMobileMenu()" class="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <nav id="mobile-nav-links" class="space-y-1.5"></nav>
+      </div>
+      <div class="pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500">
+        Exam Prep Edition • Complete Lecture Notes
+      </div>
+    </aside>
+  </div>
+
+  <div class="min-h-screen flex">
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 px-5 py-6 justify-between z-20">
+      <div>
+        <!-- Brand Header -->
+        <div class="flex items-center justify-between mb-8">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-500/20">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            </div>
+            <div>
+              <h1 class="font-bold text-base leading-tight">DSA Study Hub</h1>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Lecture Reviewer</p>
+            </div>
+          </div>
+          <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Toggle Dark/Light Theme">
+            <svg id="theme-icon-desktop" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+          </button>
+        </div>
+
+        <!-- Study Progress Tracker -->
+        <div class="mb-6 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60">
+          <div class="flex items-center justify-between text-xs font-medium mb-1.5">
+            <span class="text-slate-600 dark:text-slate-300">Study Checklist</span>
+            <span id="progress-text" class="text-indigo-600 dark:text-indigo-400 font-semibold">0 / 12 Topics</span>
+          </div>
+          <div class="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav id="desktop-nav-links" class="space-y-1.5"></nav>
+      </div>
+
+      <!-- Quick Study Tip -->
+      <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40">
+        <div class="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">Exam Tip</div>
+        <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+          Focus on <strong>why</strong> each data structure or sort has its Big-O complexity—especially worst-case triggers (e.g., skewed BSTs, bad Quick Sort pivots).
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 lg:pl-72 w-full max-w-full overflow-x-hidden">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-8">
+
+        <!-- =========================================================
+             TAB 1: OVERVIEW & BIG-O CHEAT SHEET
+        ========================================================== -->
+        <section id="tab-overview" class="tab-section fade-in space-y-8">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-6">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 mb-2">
+                Master Study Guide
+              </span>
+              <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Data Structures & Algorithms</h2>
+              <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base max-w-2xl">
+                A complete, interactive review of Linear & Advanced Data Structures and Sorting Algorithms. Check off topics as you master them!
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="switchTab('linear')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium shadow-sm transition">
+                Start Studying →
+              </button>
+              <button onclick="switchTab('practice')" class="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-sm font-medium transition">
+                Take Practice Quiz
+              </button>
+            </div>
+          </div>
+
+          <!-- Topic Mastery Checklist Grid -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-bold text-lg">Lecture Syllabus Checklist</h3>
+              <button onclick="resetChecklist()" class="text-xs text-slate-500 hover:text-indigo-500 transition">Reset Progress</button>
+            </div>
+            <div id="syllabus-checklist" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+          </div>
+
+          <!-- Data Structures Big-O Cheat Sheet -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+            <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="font-bold text-lg">Data Structures Complexity Cheat Sheet</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Average vs. Worst-case time & space complexities</p>
+              </div>
+              <div class="flex flex-wrap gap-1.5 text-xs">
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 font-mono">O(1) / O(log n) Fast</span>
+                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 font-mono">O(n) Linear</span>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                    <th class="py-3.5 px-4 font-semibold">Data Structure</th>
+                    <th class="py-3.5 px-4 font-semibold">Access</th>
+                    <th class="py-3.5 px-4 font-semibold">Search</th>
+                    <th class="py-3.5 px-4 font-semibold">Insertion</th>
+                    <th class="py-3.5 px-4 font-semibold">Deletion</th>
+                    <th class="py-3.5 px-4 font-semibold">Space</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 font-mono text-xs sm:text-sm">
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Array (Static/Dynamic)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Matrix (R × C)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(R·C)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(R·C)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(R·C)</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(R·C)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Stack (LIFO)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="font-sans text-xs text-slate-400">(push)</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="font-sans text-xs text-slate-400">(pop)</span></td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Queue (FIFO)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="font-sans text-xs text-slate-400">(enq)</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="font-sans text-xs text-slate-400">(deq)</span></td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Singly / Doubly Linked List</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)*</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)*</td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Hash Table</td>
+                    <td class="py-3 px-4 text-slate-400">N/A</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Binary Search Tree (BST)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(log n) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(log n) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(log n) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(log n) <span class="text-rose-500 text-xs">[O(n)]</span></td>
+                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400">O(n)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-5 py-3 bg-slate-50 dark:bg-slate-800/40 text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800">
+              *Linked List O(1) insertion/deletion assumes you already hold a pointer/reference to the target node (or head/tail); finding the position takes O(n). Bracketed <span class="font-mono text-rose-500">[O(n)]</span> denotes worst-case complexity.
+            </div>
+          </div>
+
+          <!-- Sorting Algorithms Big-O Cheat Sheet -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+            <div class="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800">
+              <h3 class="font-bold text-lg">Sorting Algorithms Comparison Table</h3>
+              <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400">Time complexity, auxiliary space, stability, and core paradigm</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
+                    <th class="py-3.5 px-4 font-semibold">Algorithm</th>
+                    <th class="py-3.5 px-4 font-semibold">Best Time</th>
+                    <th class="py-3.5 px-4 font-semibold">Average Time</th>
+                    <th class="py-3.5 px-4 font-semibold">Worst Time</th>
+                    <th class="py-3.5 px-4 font-semibold">Aux Space</th>
+                    <th class="py-3.5 px-4 font-semibold">Stable?</th>
+                    <th class="py-3.5 px-4 font-semibold">Method</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-800 font-mono text-xs sm:text-sm">
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Bubble Sort</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">Ω(n)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">Θ(n²)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(n²)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)</td>
+                    <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">Yes</span></td>
+                    <td class="py-3 px-4 font-sans text-slate-600 dark:text-slate-400">Exchanging</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Insertion Sort</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">Ω(n)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">Θ(n²)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(n²)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)</td>
+                    <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">Yes</span></td>
+                    <td class="py-3 px-4 font-sans text-slate-600 dark:text-slate-400">Insertion</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Selection Sort</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">Ω(n²)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">Θ(n²)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(n²)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(1)</td>
+                    <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded-full text-xs bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300">No</span></td>
+                    <td class="py-3 px-4 font-sans text-slate-600 dark:text-slate-400">Selection</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Merge Sort</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">Ω(n log n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">Θ(n log n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(n log n)</td>
+                    <td class="py-3 px-4 text-amber-600 dark:text-amber-400">O(n)</td>
+                    <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">Yes</span></td>
+                    <td class="py-3 px-4 font-sans text-slate-600 dark:text-slate-400">Divide & Conquer</td>
+                  </tr>
+                  <tr class="hover:bg-slate-50/70 dark:hover:bg-slate-800/40">
+                    <td class="py-3 px-4 font-sans font-semibold text-slate-900 dark:text-white">Quick Sort</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">Ω(n log n)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">Θ(n log n)</td>
+                    <td class="py-3 px-4 text-rose-600 dark:text-rose-400">O(n²)</td>
+                    <td class="py-3 px-4 text-emerald-600 dark:text-emerald-400">O(log n)</td>
+                    <td class="py-3 px-4 font-sans"><span class="px-2 py-0.5 rounded-full text-xs bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-300">No</span></td>
+                    <td class="py-3 px-4 font-sans text-slate-600 dark:text-slate-400">Partitioning</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- =========================================================
+             TAB 2: LINEAR DATA STRUCTURES
+        ========================================================== -->
+        <section id="tab-linear" class="tab-section hidden fade-in space-y-8">
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Module 01</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Linear Data Structures</h2>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
+              Elements are arranged sequentially, where each element is attached to its previous and/or next adjacent element.
+            </p>
+          </div>
+
+          <!-- 1. ARRAYS -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">1</span>
+                <h3 class="text-xl font-bold">Arrays</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="arrays" class="topic-checkbox rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              An <strong>Array</strong> is a collection of homogeneous elements stored in <strong>contiguous memory locations</strong>. Because elements sit side-by-side in RAM, any element's memory address can be computed directly using its index: <code class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">Address = Base_Address + (Index × Element_Size)</code>.
+            </p>
+
+            <!-- Contiguous Memory Visual -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/70">
+              <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Contiguous Memory Layout (4-byte Integers)</div>
+              <div class="grid grid-cols-5 gap-2 max-w-xl text-center font-mono">
+                <div class="p-2.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="text-[10px] opacity-80">idx [0]</div>
+                  <div class="font-bold text-base">42</div>
+                  <div class="text-[10px] opacity-75 mt-1">0x100</div>
+                </div>
+                <div class="p-2.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="text-[10px] opacity-80">idx [1]</div>
+                  <div class="font-bold text-base">17</div>
+                  <div class="text-[10px] opacity-75 mt-1">0x104</div>
+                </div>
+                <div class="p-2.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="text-[10px] opacity-80">idx [2]</div>
+                  <div class="font-bold text-base">89</div>
+                  <div class="text-[10px] opacity-75 mt-1">0x108</div>
+                </div>
+                <div class="p-2.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="text-[10px] opacity-80">idx [3]</div>
+                  <div class="font-bold text-base">5</div>
+                  <div class="text-[10px] opacity-75 mt-1">0x10C</div>
+                </div>
+                <div class="p-2.5 rounded-lg bg-indigo-600 text-white shadow-xs">
+                  <div class="text-[10px] opacity-80">idx [4]</div>
+                  <div class="font-bold text-base">64</div>
+                  <div class="text-[10px] opacity-75 mt-1">0x110</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div class="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/70 dark:border-emerald-800/40">
+                <h4 class="font-bold text-emerald-800 dark:text-emerald-300 mb-1.5">Advantages</h4>
+                <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
+                  <li><strong>O(1) Random Access:</strong> Instant lookup by index.</li>
+                  <li><strong>Cache Locality:</strong> Contiguous memory maximizes CPU cache hits.</li>
+                  <li><strong>Zero Pointer Overhead:</strong> Only stores raw data values.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/70 dark:border-rose-800/40">
+                <h4 class="font-bold text-rose-800 dark:text-rose-300 mb-1.5">Disadvantages</h4>
+                <ul class="list-disc list-inside space-y-1 text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
+                  <li><strong>Fixed Size (Static):</strong> Resizing dynamic arrays requires O(n) copying.</li>
+                  <li><strong>O(n) Middle Insert/Delete:</strong> Requires shifting subsequent elements.</li>
+                  <li><strong>Unsorted Search:</strong> Linear scan takes O(n) time.</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. MATRICES -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">2</span>
+                <h3 class="text-xl font-bold">Matrices (2D Arrays)</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="matrices" class="topic-checkbox rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Matrix</strong> is a two-dimensional grid of size <code class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">R × C</code> (Rows × Columns). Although visualized as a 2D table, computer RAM is 1-dimensional, so matrices are flattened using either <strong>Row-Major</strong> or <strong>Column-Major</strong> ordering.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-sm mb-2">Memory Flattening Orders</h4>
+                <ul class="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                  <li><strong>Row-Major (C, C++, Python, Java):</strong> Stores row 0 completely, then row 1, etc. <br><code class="font-mono text-xs text-indigo-600 dark:text-indigo-400">Offset = (r × NumCols) + c</code></li>
+                  <li><strong>Column-Major (Fortran, MATLAB, R):</strong> Stores column 0 completely, then column 1, etc. <br><code class="font-mono text-xs text-indigo-600 dark:text-indigo-400">Offset = (c × NumRows) + r</code></li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-sm mb-2">Common Operations & Complexity</h4>
+                <ul class="space-y-1.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                  <li>• <strong>Element Access <code>M[r][c]</code>:</strong> <span class="font-mono text-emerald-600 dark:text-emerald-400">O(1)</span></li>
+                  <li>• <strong>Traversal / Transpose:</strong> <span class="font-mono text-amber-600 dark:text-amber-400">O(R × C)</span></li>
+                  <li>• <strong>Standard Matrix Multiplication (N×N):</strong> <span class="font-mono text-rose-600 dark:text-rose-400">O(N³)</span></li>
+                  <li>• <strong>Use Cases:</strong> Image pixels, Graph Adjacency Matrices, Dynamic Programming tables.</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3. STACKS + INTERACTIVE SANDBOX -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">3</span>
+                <h3 class="text-xl font-bold">Stacks (LIFO)</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="stacks" class="topic-checkbox rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Stack</strong> follows the <strong>LIFO (Last-In, First-Out)</strong> principle—like a stack of plates. Insertions and deletions happen strictly at one end called the <strong>TOP</strong>.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <!-- Theory & Code -->
+              <div class="lg:col-span-6 space-y-4">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">push(x)</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Add to top • O(1)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">pop()</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Remove top • O(1)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-indigo-600 dark:text-indigo-400 text-sm">peek()</div>
+                    <div class="text-xs text-slate-500 mt-0.5">View top • O(1)</div>
+                  </div>
+                </div>
+                <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-1">
+                  <p><strong>Key Applications:</strong> Function Call Stack (recursion), Undo/Redo history, Bracket/Syntax balancing, Depth-First Search (DFS), Postfix expression evaluation.</p>
+                  <p><strong>Edge Errors:</strong> <em>Stack Overflow</em> (pushing onto a full fixed-capacity stack) and <em>Stack Underflow</em> (popping from an empty stack).</p>
+                </div>
+              </div>
+
+              <!-- Interactive Stack Simulator -->
+              <div class="lg:col-span-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">Interactive Stack Sandbox (Max: 5)</span>
+                  <span id="stack-status" class="text-xs font-mono text-slate-500">Size: 3/5</span>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <input id="stack-input" type="text" maxlength="6" placeholder="Val (e.g. 99)" class="w-28 px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                  <button onclick="stackPush()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition">Push</button>
+                  <button onclick="stackPop()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition">Pop</button>
+                  <button onclick="stackPeek()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-xs font-semibold transition">Peek</button>
+                </div>
+                <div id="stack-msg" class="text-xs font-mono text-indigo-600 dark:text-indigo-300 mb-2 h-4">Ready. Top is at the highest box.</div>
+                <div id="stack-visual" class="flex flex-col-reverse items-center justify-start min-h-[168px] p-3 rounded-lg bg-white dark:bg-slate-900 border-x-2 border-b-2 border-slate-400 dark:border-slate-600 gap-1.5"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4. QUEUES + INTERACTIVE SANDBOX -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">4</span>
+                <h3 class="text-xl font-bold">Queues (FIFO)</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="queues" class="topic-checkbox rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Queue</strong> follows the <strong>FIFO (First-In, First-Out)</strong> principle—like a checkout line. Elements enter at the <strong>REAR (Tail)</strong> via <code>enqueue</code> and leave from the <strong>FRONT (Head)</strong> via <code>dequeue</code>.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <div class="lg:col-span-6 space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                <div class="grid grid-cols-3 gap-2 text-center">
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">enqueue(x)</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Add to rear • O(1)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">dequeue()</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Remove front • O(1)</div>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700">
+                    <div class="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">front()</div>
+                    <div class="text-xs text-slate-500 mt-0.5">View front • O(1)</div>
+                  </div>
+                </div>
+                <p><strong>Variants:</strong></p>
+                <ul class="list-disc list-inside space-y-1">
+                  <li><strong>Circular Queue:</strong> Connects rear back to front using modulo arithmetic <code class="font-mono text-xs">(rear + 1) % capacity</code> to prevent wasted array slots.</li>
+                  <li><strong>Priority Queue:</strong> Dequeues highest-priority element first (typically built with a Binary Heap).</li>
+                  <li><strong>Deque (Double-Ended Queue):</strong> Allows O(1) insertion/removal at both front and rear.</li>
+                </ul>
+                <p><strong>Use Cases:</strong> Breadth-First Search (BFS), CPU task scheduling, printer spoolers, message buffers.</p>
+              </div>
+
+              <!-- Interactive Queue Simulator -->
+              <div class="lg:col-span-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Interactive Queue Sandbox (Max: 6)</span>
+                  <span id="queue-status" class="text-xs font-mono text-slate-500">Size: 3/6</span>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4">
+                  <input id="queue-input" type="text" maxlength="6" placeholder="Val (e.g. A4)" class="w-28 px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button onclick="queueEnqueue()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition">Enqueue</button>
+                  <button onclick="queueDequeue()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold transition">Dequeue</button>
+                </div>
+                <div id="queue-msg" class="text-xs font-mono text-emerald-600 dark:text-emerald-300 mb-2 h-4">Front exits left ← | → Rear enters right</div>
+                <div class="flex items-center justify-between text-[11px] font-bold uppercase text-slate-400 px-1 mb-1">
+                  <span>← FRONT (Out)</span>
+                  <span>REAR (In) ←</span>
+                </div>
+                <div id="queue-visual" class="flex items-center justify-start min-h-[76px] p-3 rounded-lg bg-white dark:bg-slate-900 border-y-2 border-slate-400 dark:border-slate-600 gap-2 overflow-x-auto"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5. LINKED LISTS -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-bold flex items-center justify-center text-sm">5</span>
+                <h3 class="text-xl font-bold">Linked Lists</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="linkedlists" class="topic-checkbox rounded text-indigo-600 focus:ring-indigo-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Linked List</strong> is a dynamic linear collection of <strong>Nodes</strong> scattered in memory. Each node stores <strong>data</strong> plus one or more <strong>pointers/references</strong> linking to adjacent nodes.
+            </p>
+
+            <!-- Node Diagram -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 overflow-x-auto">
+              <div class="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">Singly Linked List Pointer Chain</div>
+              <div class="flex items-center gap-2 min-w-max font-mono text-xs">
+                <span class="px-2.5 py-1 rounded bg-indigo-600 text-white font-bold">HEAD</span>
+                <span class="text-slate-400">→</span>
+                <div class="flex border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
+                  <span class="px-3 py-2 font-bold">10</span>
+                  <span class="px-2.5 py-2 bg-slate-100 dark:bg-slate-800 border-l border-slate-300 dark:border-slate-600 text-indigo-500">next</span>
+                </div>
+                <span class="text-slate-400">→</span>
+                <div class="flex border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
+                  <span class="px-3 py-2 font-bold">25</span>
+                  <span class="px-2.5 py-2 bg-slate-100 dark:bg-slate-800 border-l border-slate-300 dark:border-slate-600 text-indigo-500">next</span>
+                </div>
+                <span class="text-slate-400">→</span>
+                <div class="flex border border-slate-300 dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
+                  <span class="px-3 py-2 font-bold">40</span>
+                  <span class="px-2.5 py-2 bg-slate-100 dark:bg-slate-800 border-l border-slate-300 dark:border-slate-600 text-rose-500">null</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs sm:text-sm">
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-indigo-600 dark:text-indigo-400 mb-1">Singly Linked List</h4>
+                <p class="text-slate-600 dark:text-slate-300">Each node has <code>data</code> and <code>next</code>. Forward traversal only. Low memory overhead (1 pointer/node).</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-indigo-600 dark:text-indigo-400 mb-1">Doubly Linked List</h4>
+                <p class="text-slate-600 dark:text-slate-300">Each node has <code>prev</code>, <code>data</code>, and <code>next</code>. Bidirectional traversal & O(1) deletion given a node reference.</p>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 class="font-bold text-indigo-600 dark:text-indigo-400 mb-1">Circular Linked List</h4>
+                <p class="text-slate-600 dark:text-slate-300">The last node's <code>next</code> points back to <code>HEAD</code> instead of <code>null</code>. Great for round-robin scheduling.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================================================
+             TAB 3: ADVANCED DATA STRUCTURES
+        ========================================================== -->
+        <section id="tab-advanced" class="tab-section hidden fade-in space-y-8">
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Module 02</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Advanced Data Structures</h2>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
+              Non-linear and associative structures engineered for rapid O(1) or O(log n) lookup, insertion, and hierarchical organization.
+            </p>
+          </div>
+
+          <!-- 1. HASH TABLES -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold flex items-center justify-center text-sm">1</span>
+                <h3 class="text-xl font-bold">Hash Tables (Hash Maps)</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="hashtable" class="topic-checkbox rounded text-purple-600 focus:ring-purple-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Hash Table</strong> stores <strong>Key–Value pairs</strong> and achieves average <strong>O(1)</strong> search, insert, and delete time by passing the key through a <strong>Hash Function</strong> <code class="font-mono text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">index = hash(key) % table_size</code> to find its bucket index in an underlying array.
+            </p>
+
+            <!-- Interactive Mini Hash Demo -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Live Hash Function Simulator (Table Size = 7)</span>
+                <span class="text-xs font-mono text-slate-500">h(key) = sum(ASCII) % 7</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <input id="hash-key-input" type="text" placeholder="Enter key (e.g. Alice)" class="px-3 py-1.5 text-sm rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-500" oninput="computeHashPreview()" />
+                <div id="hash-preview-output" class="flex items-center px-3 py-1.5 rounded-lg bg-purple-100/70 dark:bg-purple-950/50 text-purple-800 dark:text-purple-200 font-mono text-xs">
+                  Type a key to compute its bucket index...
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <h4 class="font-bold text-slate-900 dark:text-white">Collision Resolution Strategies</h4>
+                <p class="text-slate-600 dark:text-slate-300">A <strong>collision</strong> occurs when two distinct keys hash to the exact same bucket index.</p>
+                <ul class="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-300">
+                  <li><strong>Separate Chaining:</strong> Each bucket stores a Linked List (or balanced tree) of all colliding entries.</li>
+                  <li><strong>Open Addressing (Probing):</strong> Finds another open slot inside the array itself via <em>Linear Probing</em> (<code class="font-mono text-xs">h + i</code>), <em>Quadratic Probing</em> (<code class="font-mono text-xs">h + i²</code>), or <em>Double Hashing</em>.</li>
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-2">
+                <h4 class="font-bold text-slate-900 dark:text-white">Load Factor & Worst-Case O(n)</h4>
+                <ul class="list-disc list-inside space-y-1 text-slate-600 dark:text-slate-300">
+                  <li><strong>Load Factor (α):</strong> <code class="font-mono text-xs">α = n / m</code> (stored items ÷ bucket count).</li>
+                  <li><strong>Rehashing:</strong> When α exceeds a threshold (e.g., 0.75), the table doubles in size and re-hashes all keys to preserve O(1) speed.</li>
+                  <li><strong>Worst Case O(n):</strong> Happens if a poor hash function maps all keys into a single bucket (degenerating into a linked list).</li>
+                </ul>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2. BINARY SEARCH TREE (BST) -->
+          <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 font-bold flex items-center justify-center text-sm">2</span>
+                <h3 class="text-xl font-bold">Binary Search Tree (BST)</h3>
+              </div>
+              <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+                <input type="checkbox" data-topic="bst" class="topic-checkbox rounded text-purple-600 focus:ring-purple-500" />
+                <span>Mark Reviewed</span>
+              </label>
+            </div>
+
+            <p class="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed">
+              A <strong>Binary Search Tree</strong> is a rooted binary tree that enforces the <strong>BST Invariant</strong> for every node <code class="font-mono text-xs">N</code>:
+              <span class="font-semibold text-indigo-600 dark:text-indigo-400">All keys in N's left subtree &lt; N.key &lt; All keys in N's right subtree</span>.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              <!-- SVG Tree Diagram -->
+              <div class="lg:col-span-5 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex flex-col items-center">
+                <svg viewBox="0 0 260 175" class="w-full max-w-[260px] h-auto">
+                  <!-- Edges -->
+                  <line x1="130" y1="28" x2="70" y2="78" stroke="#6366f1" stroke-width="2" />
+                  <line x1="130" y1="28" x2="190" y2="78" stroke="#6366f1" stroke-width="2" />
+                  <line x1="70" y1="78" x2="38" y2="135" stroke="#6366f1" stroke-width="2" />
+                  <line x1="70" y1="78" x2="102" y2="135" stroke="#6366f1" stroke-width="2" />
+                  <line x1="190" y1="78" x2="158" y2="135" stroke="#6366f1" stroke-width="2" />
+                  <line x1="190" y1="78" x2="222" y2="135" stroke="#6366f1" stroke-width="2" />
+                  <!-- Nodes -->
+                  <g class="font-mono text-xs font-bold">
+                    <circle cx="130" cy="28" r="18" fill="#4f46e5" />
+                    <text x="130" y="32" text-anchor="middle" fill="#ffffff">50</text>
+
+                    <circle cx="70" cy="78" r="17" fill="#6366f1" />
+                    <text x="70" y="82" text-anchor="middle" fill="#ffffff">30</text>
+
+                    <circle cx="190" cy="78" r="17" fill="#6366f1" />
+                    <text x="190" y="82" text-anchor="middle" fill="#ffffff">70</text>
+
+                    <circle cx="38" cy="135" r="16" fill="#0ea5e9" />
+                    <text x="38" y="139" text-anchor="middle" fill="#ffffff">20</text>
+
+                    <circle cx="102" cy="135" r="16" fill="#0ea5e9" />
+                    <text x="102" y="139" text-anchor="middle" fill="#ffffff">40</text>
+
+                    <circle cx="158" cy="135" r="16" fill="#0ea5e9" />
+                    <text x="158" y="139" text-anchor="middle" fill="#ffffff">60</text>
+
+                    <circle cx="222" cy="135" r="16" fill="#0ea5e9" />
+                    <text x="222" y="139" text-anchor="middle" fill="#ffffff">80</text>
+                  </g>
+                </svg>
+                <span class="text-xs text-slate-500 mt-1">Balanced BST (Height h = 2)</span>
+              </div>
+
+              <!-- Traversals & Deletion Cases -->
+              <div class="lg:col-span-7 space-y-3 text-xs sm:text-sm">
+                <div class="p-3.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/70 dark:border-indigo-800/40">
+                  <h4 class="font-bold text-indigo-800 dark:text-indigo-300 mb-1">Depth-First Tree Traversals (on example tree)</h4>
+                  <ul class="space-y-1 font-mono text-xs text-slate-700 dark:text-slate-300">
+                    <li><strong>Inorder (Left, Root, Right):</strong> 20, 30, 40, 50, 60, 70, 80 <span class="font-sans text-emerald-600 dark:text-emerald-400 font-semibold">(Always yields sorted ascending order!)</span></li>
+                    <li><strong>Preorder (Root, Left, Right):</strong> 50, 30, 20, 40, 70, 60, 80 <span class="font-sans text-slate-500">(Used to clone/serialize a tree)</span></li>
+                    <li><strong>Postorder (Left, Right, Root):</strong> 20, 40, 30, 60, 80, 70, 50 <span class="font-sans text-slate-500">(Used to delete/free nodes bottom-up)</span></li>
+                  </ul>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-1">
+                  <h4 class="font-bold">3 Cases of BST Deletion</h4>
+                  <p class="text-slate-600 dark:text-slate-300"><strong>1. Leaf Node (0 children):</strong> Simply remove it.</p>
+                  <p class="text-slate-600 dark:text-slate-300"><strong>2. One Child:</strong> Bypass node and link its parent directly to its child.</p>
+                  <p class="text-slate-600 dark:text-slate-300"><strong>3. Two Children:</strong> Replace node's value with its <strong>Inorder Successor</strong> (smallest key in right subtree) or <strong>Inorder Predecessor</strong>, then delete that duplicate.</p>
+                </div>
+
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                  <strong>Complexity Note:</strong> Time is <code class="font-mono">O(h)</code> where <code class="font-mono">h</code> is tree height. Balanced BSTs have <code class="font-mono">h = O(log n)</code>. Inserting already-sorted data creates a degenerate <strong>skewed BST</strong> (essentially a linked list) with <code class="font-mono text-rose-500">h = O(n)</code>.
+                </p>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- =========================================================
+             TAB 4: SORTING ALGORITHMS + VISUALIZER
+        ========================================================== -->
+        <section id="tab-sorting" class="tab-section hidden fade-in space-y-8">
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Module 03</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Sorting Algorithms</h2>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
+              Arranging elements in monotonic order. Understand stability, in-place space, and step-by-step execution.
+            </p>
+          </div>
+
+          <!-- Interactive Sorting Step Visualizer -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  Interactive Sorting Step Visualizer
+                </h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Step through comparisons and swaps or auto-play any of the 5 algorithms.</p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2">
+                <select id="sort-algo-select" onchange="initSortVisualizer()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                  <option value="bubble">Bubble Sort</option>
+                  <option value="insertion">Insertion Sort</option>
+                  <option value="selection">Selection Sort</option>
+                  <option value="merge">Merge Sort</option>
+                  <option value="quick">Quick Sort</option>
+                </select>
+                <button onclick="randomizeSortArray()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-xs font-semibold transition">
+                  New Array
+                </button>
+              </div>
+            </div>
+
+            <!-- Bar Chart Canvas -->
+            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800">
+              <div id="sort-bars-container" class="h-48 sm:h-56 flex items-end justify-center gap-2 sm:gap-3 pt-6 px-2"></div>
+              <div id="sort-step-caption" class="mt-4 text-center font-mono text-xs sm:text-sm text-indigo-600 dark:text-indigo-300 min-h-[20px]">
+                Select an algorithm and click Step or Auto Play.
+              </div>
+            </div>
+
+            <!-- Playback Controls & Legend -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div class="flex items-center gap-2">
+                <button onclick="stepSortPrev()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">← Prev</button>
+                <button id="sort-play-btn" onclick="toggleAutoPlaySort()" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-xs transition">▶ Auto Play</button>
+                <button onclick="stepSortNext()" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">Next →</button>
+                <span id="sort-step-counter" class="text-xs font-mono text-slate-500 ml-1">Step 0 / 0</span>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-xs bg-indigo-500"></span> Unsorted</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-xs bg-amber-400"></span> Comparing / Pivot</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-xs bg-rose-500"></span> Swapping / Writing</span>
+                <span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded-xs bg-emerald-500"></span> Sorted</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Cards for Each of the 5 Sorting Algorithms -->
+          <div id="sorting-cards-container" class="space-y-5"></div>
+        </section>
+
+        <!-- =========================================================
+             TAB 5: FLASHCARDS & SELF-ASSESSMENT QUIZ
+        ========================================================== -->
+        <section id="tab-practice" class="tab-section hidden fade-in space-y-8">
+          <div class="border-b border-slate-200 dark:border-slate-800 pb-5">
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Module 04</span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-1">Active Recall & Practice Quiz</h2>
+            <p class="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
+              Test your retention with interactive flashcards and a 12-question exam simulator covering every lecture topic.
+            </p>
+          </div>
+
+          <!-- Active Recall Flashcards -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-lg">Active Recall Flashcards</h3>
+              <span id="flashcard-counter" class="text-xs font-mono px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Card 1 of 10</span>
+            </div>
+
+            <div class="perspective-1000 max-w-2xl mx-auto">
+              <div id="flashcard-inner" onclick="flipFlashcard()" class="relative w-full min-h-[210px] cursor-pointer transition-transform duration-500 transform-style-3d">
+                <!-- Front -->
+                <div class="absolute inset-0 backface-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-700 text-white p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-md">
+                  <span id="fc-category" class="text-[11px] uppercase tracking-widest font-semibold bg-white/15 px-2.5 py-0.5 rounded-full mb-3">Category</span>
+                  <p id="fc-question" class="text-lg sm:text-xl font-bold leading-snug">Question goes here</p>
+                  <span class="text-xs text-indigo-200 mt-4">Click card to reveal answer ↻</span>
+                </div>
+                <!-- Back -->
+                <div class="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-indigo-500/40 p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-md">
+                  <span class="text-[11px] uppercase tracking-widest font-bold text-indigo-600 dark:text-indigo-400 mb-2">Answer</span>
+                  <p id="fc-answer" class="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-relaxed font-medium">Answer goes here</p>
+                  <span class="text-xs text-slate-400 mt-4">Click to flip back ↺</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 pt-2">
+              <button onclick="prevFlashcard()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition">← Previous</button>
+              <button onclick="flipFlashcard()" class="px-4 py-2 rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 text-sm font-semibold transition">Flip Card</button>
+              <button onclick="nextFlashcard()" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm font-medium transition">Next →</button>
+            </div>
+          </div>
+
+          <!-- Self-Assessment Quiz -->
+          <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+              <div>
+                <h3 class="font-bold text-lg">Comprehensive Lecture Quiz (12 Questions)</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Select an answer for each question to receive immediate feedback and explanations.</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <span id="quiz-score-badge" class="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-bold text-sm">
+                  Score: 0 / 12
+                </span>
+                <button onclick="resetQuiz()" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold transition">
+                  Reset Quiz
+                </button>
+              </div>
+            </div>
+
+            <div id="quiz-container" class="space-y-6"></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /* =========================================================================
+       1. NAVIGATION & THEME STATE
+    ========================================================================= */
+    const NAV_ITEMS = [
+      { id: 'overview', label: 'Overview & Big-O Sheet', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+      { id: 'linear', label: 'Linear Data Structures', icon: 'M4 6h16M4 10h16M4 14h16M4 18h16' },
+      { id: 'advanced', label: 'Advanced Data Structures', icon: 'M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11' },
+      { id: 'sorting', label: 'Sorting Algorithms', icon: 'M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12' },
+      { id: 'practice', label: 'Flashcards & Quiz', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
+    ];
+
+    let activeTab = 'overview';
+
+    function renderNavigation() {
+      const desktopNav = document.getElementById('desktop-nav-links');
+      const mobileNav = document.getElementById('mobile-nav-links');
+      const html = NAV_ITEMS.map(item => {
+        const isActive = item.id === activeTab;
+        const activeClasses = isActive
+          ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/20'
+          : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70';
+        return `
+          <button onclick="switchTab('${item.id}')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition ${activeClasses}">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${item.icon}"/>
+            </svg>
+            <span class="truncate">${item.label}</span>
+          </button>
+        `;
+      }).join('');
+      desktopNav.innerHTML = html;
+      mobileNav.innerHTML = html;
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.tab-section').forEach(sec => sec.classList.add('hidden'));
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+      renderNavigation();
+      document.getElementById('mobile-drawer').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('mobile-drawer').classList.toggle('hidden');
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      const isDark = html.classList.contains('dark');
+      localStorage.setItem('dsa_reviewer_theme', isDark ? 'dark' : 'light');
+      updateThemeIcons();
+    }
+
+    function updateThemeIcons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const sunPath = 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z';
+      const moonPath = 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z';
+      const path = isDark ? sunPath : moonPath;
+      ['theme-icon-desktop', 'theme-icon-mobile'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${path}"/>`;
+      });
+    }
+
+    /* =========================================================================
+       2. STUDY CHECKLIST & PROGRESS TRACKER
+    ========================================================================= */
+    const SYLLABUS_TOPICS = [
+      { id: 'arrays', title: 'Arrays', category: 'Linear DS', tab: 'linear' },
+      { id: 'matrices', title: 'Matrices (2D)', category: 'Linear DS', tab: 'linear' },
+      { id: 'stacks', title: 'Stacks (LIFO)', category: 'Linear DS', tab: 'linear' },
+      { id: 'queues', title: 'Queues (FIFO)', category: 'Linear DS', tab: 'linear' },
+      { id: 'linkedlists', title: 'Linked Lists', category: 'Linear DS', tab: 'linear' },
+      { id: 'hashtable', title: 'Hash Tables', category: 'Advanced DS', tab: 'advanced' },
+      { id: 'bst', title: 'Binary Search Trees', category: 'Advanced DS', tab: 'advanced' },
+      { id: 'bubble', title: 'Bubble Sort', category: 'Sorting', tab: 'sorting' },
+      { id: 'insertion', title: 'Insertion Sort', category: 'Sorting', tab: 'sorting' },
+      { id: 'selection', title: 'Selection Sort', category: 'Sorting', tab: 'sorting' },
+      { id: 'merge', title: 'Merge Sort', category: 'Sorting', tab: 'sorting' },
+      { id: 'quick', title: 'Quick Sort', category: 'Sorting', tab: 'sorting' }
+    ];
+
+    let completedTopics = JSON.parse(localStorage.getItem('dsa_completed_topics') || '[]');
+
+    function renderChecklist() {
+      const container = document.getElementById('syllabus-checklist');
+      container.innerHTML = SYLLABUS_TOPICS.map(t => {
+        const checked = completedTopics.includes(t.id);
+        return `
+          <div class="flex items-center justify-between p-3 rounded-xl border ${checked ? 'bg-indigo-50/60 dark:bg-indigo-950/30 border-indigo-300 dark:border-indigo-800' : 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800'} transition">
+            <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
+              <input type="checkbox" ${checked ? 'checked' : ''} onchange="toggleTopic('${t.id}')" class="rounded text-indigo-600 focus:ring-indigo-500" />
+              <div class="truncate">
+                <div class="text-sm font-semibold ${checked ? 'line-through text-slate-400' : ''}">${t.title}</div>
+                <div class="text-[11px] text-slate-500">${t.category}</div>
+              </div>
+            </label>
+            <button onclick="switchTab('${t.tab}')" class="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline ml-2 shrink-0">Study</button>
+          </div>
+        `;
+      }).join('');
+
+      // Sync inline checkboxes across modules
+      document.querySelectorAll('.topic-checkbox').forEach(cb => {
+        const topic = cb.getAttribute('data-topic');
+        cb.checked = completedTopics.includes(topic);
+        cb.onchange = () => toggleTopic(topic);
+      });
+
+      const pct = Math.round((completedTopics.length / SYLLABUS_TOPICS.length) * 100);
+      document.getElementById('progress-text').textContent = `${completedTopics.length} / ${SYLLABUS_TOPICS.length} Topics`;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+    }
+
+    function toggleTopic(id) {
+      if (completedTopics.includes(id)) {
+        completedTopics = completedTopics.filter(item => item !== id);
+      } else {
+        completedTopics.push(id);
+      }
+      localStorage.setItem('dsa_completed_topics', JSON.stringify(completedTopics));
+      renderChecklist();
+    }
+
+    function resetChecklist() {
+      completedTopics = [];
+      localStorage.setItem('dsa_completed_topics', JSON.stringify([]));
+      renderChecklist();
+    }
+
+    /* =========================================================================
+       3. INTERACTIVE STACK, QUEUE & HASH SANDBOXES
+    ========================================================================= */
+    let stackData = ['10', '25', '42'];
+    const STACK_MAX = 5;
+
+    function renderStack() {
+      const container = document.getElementById('stack-visual');
+      document.getElementById('stack-status').textContent = `Size: ${stackData.length}/${STACK_MAX}`;
+      if (stackData.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 my-auto font-mono">[ Empty Stack ]</div>`;
+        return;
+      }
+      container.innerHTML = stackData.map((val, idx) => {
+        const isTop = idx === stackData.length - 1;
+        return `
+          <div class="w-40 py-1.5 px-3 rounded-lg font-mono text-sm font-bold flex items-center justify-between transition-all ${isTop ? 'bg-indigo-600 text-white shadow-sm ring-2 ring-indigo-400/50' : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200'}">
+            <span>${val}</span>
+            ${isTop ? '<span class="text-[10px] uppercase bg-white/20 px-1.5 py-0.5 rounded">TOP</span>' : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function stackPush() {
+      const input = document.getElementById('stack-input');
+      const msg = document.getElementById('stack-msg');
+      const val = input.value.trim() || String(Math.floor(Math.random() * 90 + 10));
+      if (stackData.length >= STACK_MAX) {
+        msg.textContent = '⚠ Stack Overflow! Max capacity (5) reached.';
+        return;
+      }
+      stackData.push(val);
+      input.value = '';
+      msg.textContent = `Pushed "${val}" onto TOP in O(1).`;
+      renderStack();
+    }
+
+    function stackPop() {
+      const msg = document.getElementById('stack-msg');
+      if (stackData.length === 0) {
+        msg.textContent = '⚠ Stack Underflow! Stack is already empty.';
+        return;
+      }
+      const popped = stackData.pop();
+      msg.textContent = `Popped "${popped}" from TOP in O(1).`;
+      renderStack();
+    }
+
+    function stackPeek() {
+      const msg = document.getElementById('stack-msg');
+      if (stackData.length === 0) {
+        msg.textContent = 'Stack is empty (null).';
+        return;
+      }
+      msg.textContent = `Peek() → Top element is "${stackData[stackData.length - 1]}" (not removed).`;
+    }
+
+    let queueData = ['Job1', 'Job2', 'Job3'];
+    const QUEUE_MAX = 6;
+
+    function renderQueue() {
+      const container = document.getElementById('queue-visual');
+      document.getElementById('queue-status').textContent = `Size: ${queueData.length}/${QUEUE_MAX}`;
+      if (queueData.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-400 mx-auto font-mono">[ Empty Queue ]</div>`;
+        return;
+      }
+      container.innerHTML = queueData.map((val, idx) => {
+        const isFront = idx === 0;
+        const isRear = idx === queueData.length - 1;
+        return `
+          <div class="shrink-0 px-3 py-2 rounded-lg font-mono text-xs font-bold flex flex-col items-center ${isFront ? 'bg-emerald-600 text-white shadow-xs' : 'bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-200'}">
+            <span>${val}</span>
+            <span class="text-[9px] uppercase opacity-80 mt-0.5">${isFront ? 'FRONT' : (isRear ? 'REAR' : `#${idx}`)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function queueEnqueue() {
+      const input = document.getElementById('queue-input');
+      const msg = document.getElementById('queue-msg');
+      const val = input.value.trim() || `Job${Math.floor(Math.random() * 90 + 10)}`;
+      if (queueData.length >= QUEUE_MAX) {
+        msg.textContent = '⚠ Queue Full! Max capacity (6) reached.';
+        return;
+      }
+      queueData.push(val);
+      input.value = '';
+      msg.textContent = `Enqueued "${val}" at REAR in O(1).`;
+      renderQueue();
+    }
+
+    function queueDequeue() {
+      const msg = document.getElementById('queue-msg');
+      if (queueData.length === 0) {
+        msg.textContent = '⚠ Queue Underflow! Queue is empty.';
+        return;
+      }
+      const removed = queueData.shift();
+      msg.textContent = `Dequeued "${removed}" from FRONT in O(1).`;
+      renderQueue();
+    }
+
+    function computeHashPreview() {
+      const key = document.getElementById('hash-key-input').value;
+      const out = document.getElementById('hash-preview-output');
+      if (!key) {
+        out.textContent = 'Type a key to compute its bucket index...';
+        return;
+      }
+      let asciiSum = 0;
+      for (let i = 0; i < key.length; i++) {
+        asciiSum += key.charCodeAt(i);
+      }
+      const bucket = asciiSum % 7;
+      out.textContent = `ASCII Sum = ${asciiSum} → ${asciiSum} % 7 = Bucket [${bucket}]`;
+    }
+
+    /* =========================================================================
+       4. SORTING ALGORITHMS NOTES & STEP-BY-STEP VISUALIZER
+    ========================================================================= */
+    const SORTING_DETAILS = [
+      {
+        id: 'bubble',
+        name: 'Bubble Sort',
+        complexities: 'Best: Ω(n) | Avg: Θ(n²) | Worst: O(n²) | Space: O(1) | Stable: Yes',
+        concept: 'Repeatedly steps through the list, compares adjacent pairs, and swaps them if they are in the wrong order. Largest elements "bubble up" to the end after each pass. Using a <code>swapped</code> boolean flag enables early exit in O(n) when the array is already sorted.',
+        code: `function bubbleSort(arr) {
+  let n = arr.length;
+  for (let i = 0; i < n - 1; i++) {
+    let swapped = false;
+    for (let j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        swapped = true;
+      }
+    }
+    if (!swapped) break; // Already sorted!
+  }
+  return arr;
+}`
+      },
+      {
+        id: 'insertion',
+        name: 'Insertion Sort',
+        complexities: 'Best: Ω(n) | Avg: Θ(n²) | Worst: O(n²) | Space: O(1) | Stable: Yes',
+        concept: 'Builds the final sorted array one item at a time—just like sorting playing cards in your hand. Picks the next unsorted element (<code>key</code>) and shifts larger sorted elements right until finding its proper spot. Highly efficient on small or nearly-sorted datasets.',
+        code: `function insertionSort(arr) {
+  for (let i = 1; i < arr.length; i++) {
+    let key = arr[i];
+    let j = i - 1;
+    while (j >= 0 && arr[j] > key) {
+      arr[j + 1] = arr[j]; // Shift right
+      j--;
+    }
+    arr[j + 1] = key;
+  }
+  return arr;
+}`
+      },
+      {
+        id: 'selection',
+        name: 'Selection Sort',
+        complexities: 'Best: Ω(n²) | Avg: Θ(n²) | Worst: O(n²) | Space: O(1) | Stable: No',
+        concept: 'Divides the array into a sorted left region and an unsorted right region. In every pass, it scans the entire unsorted region to find the <strong>minimum element</strong> and swaps it into the leftmost unsorted position. Performs at most <code>n - 1</code> swaps, making it useful when memory writes are costly.',
+        code: `function selectionSort(arr) {
+  let n = arr.length;
+  for (let i = 0; i < n - 1; i++) {
+    let minIdx = i;
+    for (let j = i + 1; j < n; j++) {
+      if (arr[j] < arr[minIdx]) minIdx = j;
+    }
+    if (minIdx !== i) {
+      [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+    }
+  }
+  return arr;
+}`
+      },
+      {
+        id: 'merge',
+        name: 'Merge Sort',
+        complexities: 'Best: Ω(n log n) | Avg: Θ(n log n) | Worst: O(n log n) | Space: O(n) | Stable: Yes',
+        concept: 'A classic <strong>Divide and Conquer</strong> algorithm. Recursively splits the array in half until subarrays of size 1 are reached, then merges pairs of sorted subarrays back together in linear O(n) time. Guarantees O(n log n) worst-case time, at the cost of O(n) auxiliary memory.',
+        code: `function mergeSort(arr) {
+  if (arr.length <= 1) return arr;
+  const mid = Math.floor(arr.length / 2);
+  const left = mergeSort(arr.slice(0, mid));
+  const right = mergeSort(arr.slice(mid));
+  return merge(left, right);
+}
+function merge(left, right) {
+  let res = [], i = 0, j = 0;
+  while (i < left.length && j < right.length) {
+    res.push(left[i] <= right[j] ? left[i++] : right[j++]);
+  }
+  return res.concat(left.slice(i)).concat(right.slice(j));
+}`
+      },
+      {
+        id: 'quick',
+        name: 'Quick Sort',
+        complexities: 'Best: Ω(n log n) | Avg: Θ(n log n) | Worst: O(n²) | Space: O(log n) | Stable: No',
+        concept: 'A <strong>Divide and Conquer</strong> algorithm that picks a <strong>pivot</strong> element and partitions the array so elements <code>&lt; pivot</code> sit on its left and elements <code>&gt; pivot</code> sit on its right. Faster in practice than Merge Sort due to in-place cache locality, though a bad pivot (e.g., sorted input with first/last pivot) degrades time to O(n²).',
+        code: `function quickSort(arr, low = 0, high = arr.length - 1) {
+  if (low < high) {
+    let pIdx = partition(arr, low, high);
+    quickSort(arr, low, pIdx - 1);
+    quickSort(arr, pIdx + 1, high);
+  }
+  return arr;
+}
+function partition(arr, low, high) {
+  let pivot = arr[high], i = low - 1;
+  for (let j = low; j < high; j++) {
+    if (arr[j] < pivot) {
+      i++;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+  [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+  return i + 1;
+}`
+      }
+    ];
+
+    function renderSortingCards() {
+      const container = document.getElementById('sorting-cards-container');
+      container.innerHTML = SORTING_DETAILS.map((s, idx) => `
+        <article class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-bold flex items-center justify-center text-sm">${idx + 1}</span>
+              <div>
+                <h3 class="text-lg sm:text-xl font-bold">${s.name}</h3>
+                <div class="font-mono text-xs text-indigo-600 dark:text-indigo-400 mt-0.5">${s.complexities}</div>
+              </div>
+            </div>
+            <label class="inline-flex items-center gap-2 text-xs font-medium cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg">
+              <input type="checkbox" data-topic="${s.id}" class="topic-checkbox rounded text-emerald-600 focus:ring-emerald-500" />
+              <span>Mark Reviewed</span>
+            </label>
+          </div>
+          <p class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">${s.concept}</p>
+          <pre class="p-4 rounded-xl bg-slate-950 text-slate-100 font-mono text-xs overflow-x-auto leading-relaxed border border-slate-800"><code>${s.code}</code></pre>
+        </article>
+      `).join('');
+    }
+
+    // Sorting Visualizer Engine
+    let baseSortArray = [45, 18, 72, 29, 90, 12, 58, 36];
+    let sortFrames = [];
+    let currentFrameIdx = 0;
+    let sortTimer = null;
+
+    function randomizeSortArray() {
+      baseSortArray = Array.from({ length: 8 }, () => Math.floor(Math.random() * 82) + 14);
+      initSortVisualizer();
+    }
+
+    function generateSortFrames(algo, inputArr) {
+      const arr = [...inputArr];
+      const frames = [];
+      const n = arr.length;
+      const pushFrame = (comparing = [], swapping = [], sorted = [], msg = '') => {
+        frames.push({ array: [...arr], comparing, swapping, sorted: [...sorted], msg });
+      };
+
+      pushFrame([], [], [], `Initial array: [${arr.join(', ')}]`);
+
+      if (algo === 'bubble') {
+        const sorted = [];
+        for (let i = 0; i < n - 1; i++) {
+          let swapped = false;
+          for (let j = 0; j < n - i - 1; j++) {
+            pushFrame([j, j + 1], [], sorted, `Comparing ${arr[j]} and ${arr[j + 1]}`);
+            if (arr[j] > arr[j + 1]) {
+              [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+              swapped = true;
+              pushFrame([], [j, j + 1], sorted, `Swapped ${arr[j + 1]} and ${arr[j]}`);
+            }
+          }
+          sorted.push(n - i - 1);
+          if (!swapped) break;
+        }
+        pushFrame([], [], Array.from({ length: n }, (_, k) => k), 'Bubble Sort Complete!');
+      } else if (algo === 'selection') {
+        const sorted = [];
+        for (let i = 0; i < n - 1; i++) {
+          let minIdx = i;
+          for (let j = i + 1; j < n; j++) {
+            pushFrame([minIdx, j], [], sorted, `Scanning: current min is ${arr[minIdx]}, checking ${arr[j]}`);
+            if (arr[j] < arr[minIdx]) minIdx = j;
+          }
+          if (minIdx !== i) {
+            [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+            pushFrame([], [i, minIdx], sorted, `Swapped minimum ${arr[i]} into index ${i}`);
+          }
+          sorted.push(i);
+        }
+        pushFrame([], [], Array.from({ length: n }, (_, k) => k), 'Selection Sort Complete!');
+      } else if (algo === 'insertion') {
+        for (let i = 1; i < n; i++) {
+          let key = arr[i];
+          let j = i - 1;
+          pushFrame([i], [], Array.from({ length: i }, (_, k) => k), `Picked key = ${key} to insert into sorted left side`);
+          while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            pushFrame([j], [j + 1], [], `Shifted ${arr[j]} right to index ${j + 1}`);
+            j--;
+          }
+          arr[j + 1] = key;
+          pushFrame([], [j + 1], Array.from({ length: i + 1 }, (_, k) => k), `Inserted key ${key} at index ${j + 1}`);
+        }
+        pushFrame([], [], Array.from({ length: n }, (_, k) => k), 'Insertion Sort Complete!');
+      } else if (algo === 'merge') {
+        function mergeSortHelper(l, r) {
+          if (l >= r) return;
+          const m = Math.floor((l + r) / 2);
+          mergeSortHelper(l, m);
+          mergeSortHelper(m + 1, r);
+          const left = arr.slice(l, m + 1);
+          const right = arr.slice(m + 1, r + 1);
+          let i = 0, j = 0, k = l;
+          while (i < left.length && j < right.length) {
+            pushFrame([l + i, m + 1 + j], [], [], `Merging subarrays: comparing ${left[i]} and ${right[j]}`);
+            if (left[i] <= right[j]) {
+              arr[k] = left[i++];
+            } else {
+              arr[k] = right[j++];
+            }
+            pushFrame([], [k], [], `Placed ${arr[k]} at index ${k}`);
+            k++;
+          }
+          while (i < left.length) {
+            arr[k] = left[i++];
+            pushFrame([], [k], [], `Placed remaining ${arr[k]} at index ${k}`);
+            k++;
+          }
+          while (j < right.length) {
+            arr[k] = right[j++];
+            pushFrame([], [k], [], `Placed remaining ${arr[k]} at index ${k}`);
+            k++;
+          }
+        }
+        mergeSortHelper(0, n - 1);
+        pushFrame([], [], Array.from({ length: n }, (_, k) => k), 'Merge Sort Complete!');
+      } else if (algo === 'quick') {
+        const fixedPivots = [];
+        function quickHelper(low, high) {
+          if (low < high) {
+            let pivot = arr[high];
+            let i = low - 1;
+            for (let j = low; j < high; j++) {
+              pushFrame([j, high], [], fixedPivots, `Pivot = ${pivot}: comparing ${arr[j]} < ${pivot}`);
+              if (arr[j] < pivot) {
+                i++;
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+                pushFrame([high], [i, j], fixedPivots, `Swapped ${arr[i]} and ${arr[j]}`);
+              }
+            }
+            [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+            const pIdx = i + 1;
+            fixedPivots.push(pIdx);
+            pushFrame([], [pIdx], fixedPivots, `Placed pivot ${pivot} at final sorted index ${pIdx}`);
+            quickHelper(low, pIdx - 1);
+            quickHelper(pIdx + 1, high);
+          } else if (low === high) {
+            fixedPivots.push(low);
+          }
+        }
+        quickHelper(0, n - 1);
+        pushFrame([], [], Array.from({ length: n }, (_, k) => k), 'Quick Sort Complete!');
+      }
+
+      return frames;
+    }
+
+    function initSortVisualizer() {
+      stopAutoPlaySort();
+      const algo = document.getElementById('sort-algo-select').value;
+      sortFrames = generateSortFrames(algo, baseSortArray);
+      currentFrameIdx = 0;
+      renderSortFrame();
+    }
+
+    function renderSortFrame() {
+      const frame = sortFrames[currentFrameIdx];
+      if (!frame) return;
+      const container = document.getElementById('sort-bars-container');
+      const maxVal = Math.max(...frame.array, 100);
+
+      container.innerHTML = frame.array.map((val, idx) => {
+        let colorClass = 'bg-indigo-500 dark:bg-indigo-500';
+        if (frame.swapping.includes(idx)) colorClass = 'bg-rose-500';
+        else if (frame.comparing.includes(idx)) colorClass = 'bg-amber-400';
+        else if (frame.sorted.includes(idx)) colorClass = 'bg-emerald-500';
+
+        const heightPct = Math.max(16, Math.round((val / maxVal) * 100));
+        return `
+          <div class="flex flex-col items-center flex-1 max-w-[46px] h-full justify-end">
+            <span class="font-mono text-xs font-bold mb-1.5 text-slate-700 dark:text-slate-200">${val}</span>
+            <div class="w-full rounded-t-lg transition-all duration-200 ${colorClass}" style="height: ${heightPct}%"></div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('sort-step-caption').textContent = frame.msg;
+      document.getElementById('sort-step-counter').textContent = `Step ${currentFrameIdx} / ${sortFrames.length - 1}`;
+    }
+
+    function stepSortNext() {
+      if (currentFrameIdx < sortFrames.length - 1) {
+        currentFrameIdx++;
+        renderSortFrame();
+      } else {
+        stopAutoPlaySort();
+      }
+    }
+
+    function stepSortPrev() {
+      stopAutoPlaySort();
+      if (currentFrameIdx > 0) {
+        currentFrameIdx--;
+        renderSortFrame();
+      }
+    }
+
+    function toggleAutoPlaySort() {
+      if (sortTimer) {
+        stopAutoPlaySort();
+        return;
+      }
+      if (currentFrameIdx >= sortFrames.length - 1) {
+        currentFrameIdx = 0;
+      }
+      document.getElementById('sort-play-btn').textContent = '⏸ Pause';
+      sortTimer = setInterval(() => {
+        if (currentFrameIdx < sortFrames.length - 1) {
+          currentFrameIdx++;
+          renderSortFrame();
+        } else {
+          stopAutoPlaySort();
+        }
+      }, 480);
+    }
+
+    function stopAutoPlaySort() {
+      if (sortTimer) {
+        clearInterval(sortTimer);
+        sortTimer = null;
+      }
+      const btn = document.getElementById('sort-play-btn');
+      if (btn) btn.textContent = '▶ Auto Play';
+    }
+
+    /* =========================================================================
+       5. FLASHCARDS & SELF-ASSESSMENT QUIZ
+    ========================================================================= */
+    const FLASHCARDS = [
+      { cat: 'Arrays', q: 'Why does accessing arr[i] take O(1) time?', a: 'Because elements are stored contiguously in memory, allowing direct address calculation: Base_Address + (i × Element_Size).' },
+      { cat: 'Matrices', q: 'What is the difference between Row-Major and Column-Major order?', a: 'Row-Major (C, Python, Java) stores rows contiguously one after another. Column-Major (MATLAB, Fortran) stores columns contiguously.' },
+      { cat: 'Stacks vs Queues', q: 'Contrast the core access principles of a Stack and a Queue.', a: 'A Stack is LIFO (Last-In, First-Out via push/pop at TOP). A Queue is FIFO (First-In, First-Out via enqueue at REAR and dequeue at FRONT).' },
+      { cat: 'Linked Lists', q: 'What is the main advantage of a Doubly Linked List over a Singly Linked List?', a: 'It supports bidirectional traversal and allows O(1) deletion of a given node without needing a separate pointer to its predecessor.' },
+      { cat: 'Hash Tables', q: 'Name the two primary methods for resolving Hash Table collisions.', a: '1) Separate Chaining (storing a linked list/bucket at each index) and 2) Open Addressing (probing for another empty slot in the table).' },
+      { cat: 'Binary Search Tree', q: 'Which BST traversal outputs all elements in sorted ascending order?', a: 'Inorder Traversal (Left → Root → Right).' },
+      { cat: 'Binary Search Tree', q: 'What causes a Binary Search Tree to degrade to O(n) worst-case time?', a: 'Inserting elements in sorted (or reverse-sorted) order without self-balancing, creating a skewed tree shaped like a linked list.' },
+      { cat: 'Sorting', q: 'Which sorting algorithms in our lecture are NOT stable?', a: 'Selection Sort and Quick Sort (non-adjacent swaps can alter the relative order of equal keys).' },
+      { cat: 'Sorting', q: 'Which sorting algorithm guarantees O(n log n) worst-case time and is stable, but needs O(n) extra space?', a: 'Merge Sort.' },
+      { cat: 'Sorting', q: 'Why is Insertion Sort preferred for nearly-sorted or very small arrays?', a: 'It is adaptive—when data is already nearly sorted, the inner while-loop barely runs, achieving Ω(n) best-case time with O(1) space.' }
+    ];
+
+    let fcIdx = 0;
+
+    function renderFlashcard() {
+      const card = FLASHCARDS[fcIdx];
+      document.getElementById('flashcard-inner').classList.remove('rotate-y-180');
+      document.getElementById('flashcard-counter').textContent = `Card ${fcIdx + 1} of ${FLASHCARDS.length}`;
+      document.getElementById('fc-category').textContent = card.cat;
+      document.getElementById('fc-question').textContent = card.q;
+      document.getElementById('fc-answer').textContent = card.a;
+    }
+
+    function flipFlashcard() {
+      document.getElementById('flashcard-inner').classList.toggle('rotate-y-180');
+    }
+
+    function nextFlashcard() {
+      fcIdx = (fcIdx + 1) % FLASHCARDS.length;
+      renderFlashcard();
+    }
+
+    function prevFlashcard() {
+      fcIdx = (fcIdx - 1 + FLASHCARDS.length) % FLASHCARDS.length;
+      renderFlashcard();
+    }
+
+    const QUIZ_QUESTIONS = [
+      {
+        q: '1. Inserting an element at the beginning (index 0) of a standard array of size n takes:',
+        options: ['O(1)', 'O(log n)', 'O(n)', 'O(n²)'],
+        answer: 2,
+        exp: 'All n existing elements must be shifted one index to the right, taking O(n) time.'
+      },
+      {
+        q: '2. In a 4 × 5 matrix stored in Row-Major order (0-indexed), which 1D offset corresponds to element M[2][3]?',
+        options: ['11', '13', '14', '17'],
+        answer: 1,
+        exp: 'Row-Major offset = (row × NumCols) + col = (2 × 5) + 3 = 13.'
+      },
+      {
+        q: '3. Which data structure is used internally by programming languages to manage recursive function calls?',
+        options: ['Queue', 'Call Stack (LIFO)', 'Hash Table', 'Circular Linked List'],
+        answer: 1,
+        exp: 'Each function call pushes a stack frame onto the Call Stack and pops it upon returning.'
+      },
+      {
+        q: '4. Breadth-First Search (BFS) on a graph relies on which linear data structure?',
+        options: ['Stack', 'Queue', 'Matrix', 'Binary Search Tree'],
+        answer: 1,
+        exp: 'BFS explores neighbors level-by-level using a FIFO Queue.'
+      },
+      {
+        q: '5. Unlike Arrays, Linked Lists do NOT support:',
+        options: ['Dynamic resizing', 'O(1) insertion at the head', 'O(1) random access by index', 'Pointer manipulation'],
+        answer: 2,
+        exp: 'Linked lists lack contiguous memory, so reaching index i requires traversing i nodes in O(n) time.'
+      },
+      {
+        q: '6. In a Hash Table, what happens when the Load Factor (α = n / m) becomes too high?',
+        options: ['Collisions increase and performance degrades toward O(n)', 'Space complexity drops to O(1)', 'The hash table turns into a BST', 'Lookup becomes faster'],
+        answer: 0,
+        exp: 'High load factors cause frequent collisions; resizing and rehashing restores O(1) expected performance.'
+      },
+      {
+        q: '7. Which traversal of a Binary Search Tree visits nodes in strictly non-decreasing (sorted) order?',
+        options: ['Preorder', 'Inorder', 'Postorder', 'Level-order'],
+        answer: 1,
+        exp: 'Inorder traversal visits Left Subtree → Root → Right Subtree, producing sorted output.'
+      },
+      {
+        q: '8. When deleting a node with TWO children in a BST, what can replace the deleted node?',
+        options: ['Any leaf node', 'Its Inorder Successor or Inorder Predecessor', 'The root of the entire tree', 'Its left child only'],
+        answer: 1,
+        exp: 'The Inorder Successor (min of right subtree) or Predecessor (max of left subtree) preserves the BST invariant.'
+      },
+      {
+        q: '9. Which O(n²) sorting algorithm performs the minimum number of swaps (at most n − 1 swaps)?',
+        options: ['Bubble Sort', 'Insertion Sort', 'Selection Sort', 'Merge Sort'],
+        answer: 2,
+        exp: 'Selection Sort finds the minimum element in each pass and performs at most one swap per pass.'
+      },
+      {
+        q: '10. Which sorting algorithm has a best-case time complexity of Ω(n) when given an already-sorted array?',
+        options: ['Selection Sort', 'Insertion Sort', 'Merge Sort', 'Heap Sort'],
+        answer: 1,
+        exp: 'Insertion Sort only makes 1 comparison per element and zero shifts on an already-sorted input.'
+      },
+      {
+        q: '11. What is the main drawback of Merge Sort compared to Quick Sort?',
+        options: ['Worst-case O(n²) time', 'It is unstable', 'It requires O(n) auxiliary space for merging', 'It cannot sort linked lists'],
+        answer: 2,
+        exp: 'Standard array Merge Sort allocates temporary arrays of size O(n) during the merge step.'
+      },
+      {
+        q: '12. Quick Sort hits its O(n²) worst-case time complexity when:',
+        options: ['The pivot consistently splits the array into two equal halves', 'The pivot is repeatedly the smallest or largest element', 'All elements are distinct', 'The array size is a power of 2'],
+        answer: 1,
+        exp: 'Highly unbalanced partitions (0 elements on one side, n−1 on the other) produce O(n) recursion depth and O(n²) work.'
+      }
+    ];
+
+    let userAnswers = {};
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = QUIZ_QUESTIONS.map((item, qIdx) => {
+        const chosen = userAnswers[qIdx];
+        const answered = chosen !== undefined;
+        return `
+          <div class="p-4 sm:p-5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3">
+            <div class="font-semibold text-sm sm:text-base">${item.q}</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              ${item.options.map((opt, oIdx) => {
+                let btnStyle = 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-indigo-500';
+                if (answered) {
+                  if (oIdx === item.answer) {
+                    btnStyle = 'bg-emerald-50 dark:bg-emerald-950/50 border-emerald-500 text-emerald-800 dark:text-emerald-200 font-semibold';
+                  } else if (oIdx === chosen) {
+                    btnStyle = 'bg-rose-50 dark:bg-rose-950/50 border-rose-500 text-rose-800 dark:text-rose-200';
+                  } else {
+                    btnStyle = 'bg-white/60 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800 opacity-60';
+                  }
+                }
+                return `
+                  <button onclick="selectQuizOption(${qIdx}, ${oIdx})" ${answered ? 'disabled' : ''} class="text-left px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm transition ${btnStyle}">
+                    <span class="font-mono font-bold mr-1.5">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+            ${answered ? `
+              <div class="text-xs sm:text-sm p-3 rounded-lg ${chosen === item.answer ? 'bg-emerald-100/70 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200' : 'bg-rose-100/70 dark:bg-rose-900/30 text-rose-800 dark:text-rose-200'}">
+                <strong>${chosen === item.answer ? '✓ Correct!' : '✗ Incorrect.'}</strong> ${item.exp}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      const score = Object.entries(userAnswers).reduce((acc, [qIdx, ans]) => {
+        return acc + (QUIZ_QUESTIONS[qIdx].answer === ans ? 1 : 0);
+      }, 0);
+      document.getElementById('quiz-score-badge').textContent = `Score: ${score} / ${QUIZ_QUESTIONS.length}`;
+    }
+
+    function selectQuizOption(qIdx, oIdx) {
+      if (userAnswers[qIdx] !== undefined) return;
+      userAnswers[qIdx] = oIdx;
+      renderQuiz();
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      renderQuiz();
+    }
+
+    /* =========================================================================
+       6. INITIALIZATION ON LOAD
+    ========================================================================= */
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('dsa_reviewer_theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+      }
+      updateThemeIcons();
+      renderNavigation();
+      renderSortingCards();
+      renderChecklist();
+      renderStack();
+      renderQueue();
+      initSortVisualizer();
+      renderFlashcard();
+      renderQuiz();
+    });
+  </script>
+</body>
+</html>
